@@ -1,0 +1,12 @@
+.addbtn {
+    display: block;
+    width: 170px;
+    margin: 10px 10px 10px 10px;
+    background: #3f50b5 !important;
+    color: #fff;float: right;
+  }
+
+.btnwrapper{    
+  display: flex;
+  justify-content: flex-end;
+}

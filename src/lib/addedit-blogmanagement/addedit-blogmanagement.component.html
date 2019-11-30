@@ -1,0 +1,231 @@
+<mat-card>
+    <mat-toolbar color="primary" style="justify-content: center; align-items: center;">
+        <h2 class="headerSpan">{{headerText}}</h2>
+    </mat-toolbar>
+
+
+
+    <span class="formspan">
+        <mat-card-content class="example-container">
+            <form [formGroup]="blogManagementForm">
+                <!-- ----------------------------Blog title---------------------------- -->
+                <mat-form-field>
+                    <input matInput placeholder="Blog title*" formControlName="blogtitle"
+                       >
+                    <mat-error
+                        *ngIf="!blogManagementForm.controls['blogtitle'].valid
+        && blogManagementForm.controls['blogtitle'].errors.required && blogManagementForm.controls['blogtitle'].touched">
+                        Blog title is required.</mat-error>
+
+                   
+
+                </mat-form-field><br>
+                <!-- ------------------------------------------------------------------ -->
+
+
+                <!-- -------------------------Blog Category---------------------------- -->
+                <mat-form-field>
+                    <mat-label>Blog Category</mat-label>
+                    <select matNativeControl required formControlName="blogcat"
+                      >
+                        <option *ngFor="let item of blogCategoryArray" value="{{item._id}}">{{ item.blogtitle }}
+                        </option>
+                    </select>
+
+                </mat-form-field><br>
+                <!-- -----------------------------------------------------------------  -->
+
+
+                <!-- -------------------------Author---------------------------- -->
+                <mat-form-field>
+                    
+                    <input matInput formControlName="author" placeholder="Author*">
+                    <mat-error *ngIf="!blogManagementForm.controls['author'].valid
+    && blogManagementForm.controls['author'].errors.required && blogManagementForm.controls['author'].touched">
+                        Author is required.</mat-error>
+
+                    
+                </mat-form-field><br>
+                <!-- -----------------------------------------------------------------  -->
+
+
+                <!-- ------------------------------------Blog Content------------------ -->
+
+                <ckeditor [editor]="Editor" [config]="editorConfig" formControlName="description"
+                  ></ckeditor>
+                <mat-error
+                    *ngIf="!blogManagementForm.controls['description'].valid
+    && blogManagementForm.controls['description'].errors.required && blogManagementForm.controls['description'].touched">
+                    Blog description is required.</mat-error>
+
+              
+                <br>
+                <!-- -----------------------------------------------------------------  -->
+
+
+
+
+                <!-- -----------------------------------Priority------------------------ -->
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Priority*" formControlName="priority"
+                        >
+
+                    <mat-error *ngIf="!blogManagementForm.controls['priority'].valid && blogManagementForm.controls['priority'].errors.required">
+                        Priority is required.</mat-error>
+
+                </mat-form-field><br>
+                <!-- ------------------------------------------------------------------- -->
+
+
+
+                <!-- ----------------------------------Status---------------------------- -->
+                <mat-checkbox formControlName="status" color="primary">Active</mat-checkbox><br>
+                <!-- -------------------------------------------------------------------- -->
+
+
+
+
+
+                <!-- --------------------------------Meta title-------------------------  -->
+                <!-- <mat-form-field>
+                    <input matInput placeholder="Meta title" formControlName="metatitle"
+                       >
+                    <mat-error
+                        *ngIf="!blogManagementForm.controls['metatitle'].valid
+        && blogManagementForm.controls['metatitle'].errors.required && blogManagementForm.controls['metatitle'].touched">
+                        Meta title is required.</mat-error>
+
+                   
+                </mat-form-field> -->
+                <!-- -------------------------------------------------------------------- -->
+
+
+
+                <!-- ----------------------------------Meta Description------------------ -->
+                <!-- <mat-form-field>
+                    <textarea matInput placeholder="Meta Description" formControlName="metadesc"
+                      ></textarea>
+                    <mat-error *ngIf="!blogManagementForm.controls['metadesc'].valid
+      && blogManagementForm.controls['metadesc'].errors.required && blogManagementForm.controls['metadesc'].touched">
+                        Meta description is required.</mat-error>
+
+                </mat-form-field><br> -->
+                <!-- -------------------------------------------------------------------- -->
+
+
+
+                <!-- --------------------------------------Video URL--------------------- -->
+                <mat-label>Attach Videos:</mat-label>
+                <div formArrayName="credentials"
+                    *ngFor="let creds of blogManagementForm.controls.credentials?.value; let i = index; trackBy: trackByFn">
+                    <ng-container [formGroupName]="i">
+                        <mat-form-field class="video_embed">
+                            <input type="text" matInput formControlName="video_url">
+                            <span matPrefix>{{ video_prefix }}</span>
+                            <mat-icon matSuffix class="clickable" (click)="preview_video(i)">remove_red_eye</mat-icon>
+                            <i style="position: absolute; cursor: pointer;                           right: 4px;
+                            bottom: 7px;" class="material-icons" (click)="openSnackBar()">
+                                contact_support
+                            </i>
+
+
+                        </mat-form-field>
+
+
+                        <!-- Video Title  -->
+                        <mat-form-field>
+                            <input type="text" matInput formControlName="video_title" placeholder="Video title">
+                            <mat-icon matSuffix>title</mat-icon>
+                        </mat-form-field>
+                        <!-- Video Description  -->
+                        <mat-form-field>
+
+                            <textarea type="text" matInput formControlName="video_description"
+                                placeholder="Video description"></textarea>
+                            <mat-icon matSuffix>description</mat-icon>
+                        </mat-form-field>
+
+                        <button type="button" (click)="addYoutubeVideo('','','')">
+                            <mat-icon matSuffix>add_box</mat-icon>
+                        </button>
+                        <span *ngIf="i!=0"><button type="button" (click)="deleteCreds()">
+                                <mat-icon matSuffix>delete</mat-icon>
+                            </button></span>
+                    </ng-container>
+                </div><br>
+                <!-- ------------------------------------------------------------------- -->
+
+
+                <!-- -----------------------------Multi Tags---------------------------- -->
+                <div>
+                    <mat-label>Tags:</mat-label>
+                    <mat-form-field class="example-full-width">
+                        <input type="text" placeholder="Tag something" formControlName="tags" matInput
+                            [formControl]="myControl" [matAutocomplete]="auto" (keyup)="showval($event)">
+
+                        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                                {{option}}
+                            </mat-option>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="!blogManagementForm.controls['tags'].valid
+        && blogManagementForm.controls['tags'].errors.required">
+                            Tags are required.</mat-error>
+
+                    </mat-form-field>
+                    <div>
+
+                        <mat-chip-list class="mat_chip">
+                            <!-- <li *ngFor="let item of tags_array;let j = index">{{ item }}<mat-icon matSuffix class="clickable" (click)="clearTags(j)">clear</mat-icon></li> -->
+                            <mat-chip color="primary" selected *ngFor="let item of tags_array;let j = index">{{ item }}
+                                <mat-icon matSuffix class="clickable" (click)="clearTags(j)">clear</mat-icon>
+                            </mat-chip>
+                        </mat-chip-list>
+
+                    </div>
+                </div>
+                <!-- ----------------------------------------------------------------- -->
+
+
+                <!-- ---------------------------------------------Image Uploader--------------------- -->
+                <h1>Blogs Image:</h1>
+                <lib-file-upload [config]="imageConfigData"></lib-file-upload>
+                <!-- -------------------------------------------------------------------------------- -->
+
+                <ng-container *ngIf="flag==true">
+                    <!-- CARD VIEW  -->
+                    <mat-card-content class="files-view" *ngFor="let img of images_array_edit; let i2 = index">
+                        <mat-card class="example-card">
+                            <img mat-card-image [src]="img.img_var">
+                            <mat-card-title>{{ img.image_name }}</mat-card-title>
+                            <mat-card-subtitle>{{img.image_type}}</mat-card-subtitle>
+                            <span class="closecard" (click)="clear_image(i2)"><i class="material-icons">clear</i></span>
+
+                        </mat-card>
+                    </mat-card-content>
+                    <!-- ---------  -->
+                </ng-container>
+
+
+
+
+
+                <!-- ---------------------------------------------File Uploader--------------------- -->
+                <h1>Blogs File:</h1>
+                <lib-file-upload [config]="fileConfigData"></lib-file-upload>
+                <!-- -------------------------------------------------------------------------------- -->
+
+                <mat-chip-list class="mat_chip">
+                    <mat-chip color="primary" selected *ngFor="let item of file_array_edit;let j = index">{{ item }}
+                        <mat-icon matSuffix class="clickable" (click)="clearFileTags(j)">clear</mat-icon>
+                    </mat-chip>
+                </mat-chip-list>
+
+
+                <button class="submitbtn" mat-raised-button color="primary" type="button"
+                    (click)="onSubmit()">{{buttonText}}</button>
+
+            </form>
+        </mat-card-content>
+    </span>
+</mat-card>

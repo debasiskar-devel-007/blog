@@ -1,0 +1,78 @@
+<!-- Form Header -->
+<mat-card>
+  <mat-toolbar color="primary" style="justify-content: center; align-items: center;">
+    <h2 class="headerSpan">{{header_txt}}</h2>
+  </mat-toolbar>
+
+  <!-- Blog Add or Edit Form Start Here -->
+  <span class="formspan">
+    <mat-card-content class="example-container">
+      <form class="example-form" autocomplete="off" [formGroup]="blogCatForm">
+
+
+
+        <!-- Blog title  -->
+        <mat-form-field>
+          <input matInput type="text" placeholder="Title" formControlName="blogtitle" >
+          <mat-error *ngIf="!blogCatForm.controls['blogtitle'].valid
+        && blogCatForm.controls['blogtitle'].errors.required"> Blog title is required.</mat-error>
+          <mat-error
+            *ngIf="!blogCatForm.controls['blogtitle'].valid && !blogCatForm.controls['blogtitle'].errors.required">
+            Max length exceeded</mat-error>
+        </mat-form-field>
+
+
+
+        <!-- Priority   -->
+        <mat-form-field>
+          <input matInput type="number" placeholder="Priority" formControlName="priority">
+          <mat-error *ngIf="!blogCatForm.controls['priority'].valid
+        && blogCatForm.controls['priority'].errors.required"> Priority is required.</mat-error>
+          <mat-error
+            *ngIf="!blogCatForm.controls['priority'].valid && !blogCatForm.controls['priority'].errors.required">
+            Can't have a lower priority</mat-error>
+        </mat-form-field>
+
+        <!-- Status  -->
+
+        <mat-checkbox formControlName="status">Active</mat-checkbox><br>
+
+
+        <!-- ckeditor using start here -->
+        <mat-label>Description</mat-label>
+        <ckeditor [editor]="Editor" [config]="editorConfig" formControlName="description" ></ckeditor>
+        <mat-error *ngIf="!blogCatForm.controls['description'].valid
+        && blogCatForm.controls['description'].errors.required && blogCatForm.controls['description'].touched" > Please describe.</mat-error>
+          <mat-error
+            *ngIf="!blogCatForm.controls['description'].valid && !blogCatForm.controls['description'].errors.required">
+            Max length exceeded</mat-error>
+        <!-- ckeditor end here -->
+
+
+
+
+
+        <mat-form-field>
+          <mat-label>Parent Category</mat-label>
+          <mat-select formControlName="parent_id">
+            <mat-option [value]=0>
+              Select a category
+            </mat-option>
+            <mat-option *ngFor="let parCat of getParentCatArr" value="{{ parCat._id }}"> {{ parCat.blogtitle }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+
+
+        <button type="submit" class="submitbtn" class="submitbtn" mat-raised-button color="primary"
+          (click)="onSubmit()">{{buttonText}}</button>
+        <button type="reset" class="submitbtn" class="submitbtn" mat-raised-button color="primary">RESET</button>
+
+
+
+
+      </form>
+    </mat-card-content>
+  </span>
+</mat-card>
